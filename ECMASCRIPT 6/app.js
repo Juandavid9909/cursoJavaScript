@@ -1,27 +1,59 @@
-function crearIterador(carrito) {
-    // Inicializamos el indice
-    let i = 0;
+let valor, expReg;
 
-    return {
-        siguiente: () => {
-            let fin = (i >= carrito.length);
+expReg = /[0-9]/;
+valor = 1992;
 
-            let valor = !fin ? carrito[i++] : undefined;
+// Una fecha con exp regular 20-10-2018
+expReg = /\d\d-\d\d-\d\d\d\d/;
+valor = "20-10-2018";
 
-            return {
-                fin: fin,
-                valor: valor
-            }
-        }
-    }
-}
+// Hora 10:30
+expReg = /\d\d:\d\d/;
+valor = "10:30";
 
-const carrito = ["Producto 1", "Producto 2", "Producto 3", "Producto 4"];
+// Hora 10:30 AM
+expReg = /\d\d:\d\d \D\D/;
+valor = "10:30 AM";
 
-const recorrerCarrito = crearIterador(carrito);
+expReg = /\d+/;
+valor = 1021;
 
-console.log(recorrerCarrito.siguiente());
-console.log(recorrerCarrito.siguiente());
-console.log(recorrerCarrito.siguiente());
-console.log(recorrerCarrito.siguiente());
-console.log(recorrerCarrito.siguiente());
+// Negar la expresion
+expReg = /[^0-9]/;
+valor = 1992;
+
+// La sintaxis {1, 2}
+expReg = /\d{1,2}-\d{1,2}-\d{4}/;
+valor = "10-10-2018";
+valor = "1-1-2018";
+valor = "1-100-2018";
+valor = "10-10-203";
+
+// Letras o números
+expReg = /\w+/;
+valor = "Mensaje de prueba";
+valor = 1234;
+valor = " ";
+
+// Revusar que sean puros números
+expReg = /\d+/;
+valor = 1234;
+valor = "Hola";
+
+expReg = /([0-9])\w+/;
+valor = 1234;
+valor = "Hola mundo";
+
+// Texto sean puras mayúsculas
+expReg = /([A-Z])\w+/;
+valor = "hola mundo";
+valor = 1234;
+valor = "MENSAJE EN MAYUSCULAS";
+
+// Letras en minusculas
+expReg = /([a-z])\w+/;
+valor = "hola mundo";
+valor = 1234;
+valor = "MENSAJE EN MAYUSCULAS";
+
+console.log(expReg.test(valor));
