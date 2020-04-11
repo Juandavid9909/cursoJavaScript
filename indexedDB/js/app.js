@@ -28,6 +28,8 @@ document.addEventListener("DOMContentLoaded", () => {
         // Asignar a la base de datos
         DB = crearDB.result;
         // console.log(DB);
+
+        mostrarCitas();
     }
 
     // Este método sólo corre una vez y ideal para crear el Schema de la base de datos
@@ -46,5 +48,120 @@ document.addEventListener("DOMContentLoaded", () => {
         objectStore.createIndex("fecha", "fecha", { unique: false });
         objectStore.createIndex("hora", "hora", { unique: false });
         objectStore.createIndex("sintomas", "sintomas", { unique: false });
+    }
+
+    // Cuando el formulario se envía
+    form.addEventListener("submit", agregarDatos);
+
+    function agregarDatos(e) {
+        e.preventDefault();
+
+        const nuevaCita = {
+            mascota: nombreMascota.value,
+            cliente: nombreCliente.value,
+            telefono: telefono.value,
+            fecha: fecha.value,
+            hora: hora.value,
+            sintomas: sintomas.value
+        }
+
+        // En IndexedDB se utilizan las transacciones
+        let transaction = DB.transaction(["citas"], "readwrite");
+        let objectStore = transaction.objectStore("citas");
+        let peticion = objectStore.add(nuevaCita);
+
+        console.log(peticion);
+
+        peticion.onsuccess = () => {
+            form.reset();
+        }
+        transaction.oncomplete = () => {
+            console.log("Cita agregada");
+            mostrarCitas();
+        }
+        transaction.onerror = () => {
+            console.log("Hubo un error");
+        }
+    }
+
+    function mostrarCitas() {
+        // Limpiar las citas anteriores
+        while (citas.firstChild) {
+            citas.removeChild(citas.firstChild);
+        }
+
+        // Creamos un objectstore
+        let objectStore = DB.transaction("citas").objectStore("citas");
+
+        // Esto retorna una petición
+        objectStore.openCursor().onsuccess = function(e) {
+            // Cursor se va a ubicar en el registro indicado para acceder a los datos
+            let cursor = e.target.result;
+
+            if (cursor) {
+                let citaHTML = document.createElement("li");
+                citaHTML.setAttribute("data-cita-id", cursor.value.key);
+                citaHTML.classList.add("list-group-item");
+                console.log(cursor);
+
+                citaHTML.innerHTML = `
+                    <p class="font-weight-bold">Mascota: <span class="font-weight-normal">${ cursor.value.mascota }</span></p>
+                    <p class="font-weight-bold">Cliente: <span class="font-weight-normal">${ cursor.value.cliente }</span></p>
+                    <p class="font-weight-bold">Teléfono: <span class="font-weight-normal">${ cursor.value.telefono }</span></p>
+                    <p class="font-weight-bold">Fecha: <span class="font-weight-normal">${ cursor.value.fecha }</span></p>
+                    <p class="font-weight-bold">Hora: <span class="font-weight-normal">${ cursor.value.hora }</span></p>
+                    <p class="font-weight-bold">Síntomas: <span class="font-weight-normal">${ cursor.value.sintomas }</span></p>
+                `;
+
+                // Botón de borrar
+                const botonBorrar = document.createElement("button");
+                botonBorrar.classList.add("borrar", "btn", "btn-danger");
+                botonBorrar.innerHTML = '<span aria-hidden="true">x</span> Borrar';
+                botonBorrar.onclick = borrarCita;
+                citaHTML.appendChild(botonBorrar);
+
+                // Append en el padre
+                citas.appendChild(citaHTML);
+
+                // Consultar los próximos registros
+                cursor.continue();
+            } else {
+                if (!citas.firstChild) {
+                    // Cuando no hay registros
+                    headingAdministra.textContent = "Agrega citas para comenzar";
+                    let listado = document.createElement("p");
+                    listado.classList.add("text-center");
+                    listado.textContent = "No hay registros";
+                    citas.appendChild(listado);
+                } else {
+                    headingAdministra.textContent = "Administra tus citas"
+                }
+            }
+        }
+    }
+
+    function borrarCita(e) {
+        let citaID = Number(e.target.parentElement.getAttribute("data-cita-id"));
+
+        // En IndexedDB se utilizan las transacciones
+        let transaction = DB.transaction(["citas"], "readwrite");
+        let objectStore = transaction.objectStore("citas");
+        let peticion = objectStore.delete(citaID);
+
+        transaction.oncomplete = () => {
+            e.target.parentElement.parentElement.removeChild(e.target.parentElement);
+            console.log(`Se eliminó la cita con el ID: ${ citaID }`);
+
+            if (!citas.firstChild) {
+                // Cuando no hay registros
+                headingAdministra.textContent = "Agrega citas para comenzar";
+                let listado = document.createElement("p");
+                listado.classList.add("text-center");
+                listado.textContent = "No hay registros";
+                citas.appendChild(listado);
+            } else {
+                headingAdministra.textContent = "Administra tus citas"
+            }
+        }
     }
 });
