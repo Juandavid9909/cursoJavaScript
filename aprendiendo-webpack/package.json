@@ -1,17 +1,30 @@
 {
-  "name": "aprendiendo-webpack",
-  "version": "1.0.0",
-  "description": "Archivo para aprender webpack",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Juan David Varela",
-  "license": "ISC",
-  "devDependencies": {
-    "webpack": "^4.42.1"
-  },
-  "dependencies": {
-    "webpack-cli": "^3.3.11"
-  }
+    "name": "aprendiendo-webpack",
+    "version": "1.0.0",
+    "description": "Archivo para aprender webpack",
+    "main": "index.js",
+    "scripts": {
+        "ejecutar": "webpack --mod development",
+        "watch": "webpack --w --mode development",
+        "dev": "webpack-dev-server --mmode development --open"
+    },
+    "author": "Juan David Varela",
+    "license": "ISC",
+    "devDependencies": {
+        "@babel/cli": "^7.8.4",
+        "@babel/core": "^7.9.0",
+        "@babel/preset-env": "^7.9.5",
+        "@babel/register": "^7.9.0",
+        "babel-loader": "^8.1.0",
+        "css-loader": "^3.5.2",
+        "html-webpack-plugin": "^4.2.0",
+        "node-sass": "^4.13.1",
+        "sass-loader": "^8.0.2",
+        "style-loader": "^1.1.4",
+        "webpack": "^4.42.1",
+        "webpack-dev-server": "^3.10.3"
+    },
+    "dependencies": {
+        "webpack-cli": "^3.3.11"
+    }
 }
